@@ -39,6 +39,9 @@ EXPORT_SYMBOL_GPL(kvm_cpu_caps);
 /* CMPE 283 Assignment 2 Changes */
 u32 all_exit_count = 0;
 u64 processing_time_all_exits = 0;
+EXPORT_SYMBOL(all_exit_count);
+EXPORT_SYMBOL(processing_time_all_exits);
+
 
 
 u32 xstate_required_size(u64 xstate_bv, bool compacted)
