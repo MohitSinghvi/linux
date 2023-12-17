@@ -75,9 +75,11 @@
 MODULE_AUTHOR("Qumranet");
 MODULE_LICENSE("GPL");
 
-/*CMPE283-Assignment2 Changes*/
-extern atomic64_t exit_counter;
-extern atomic64_t exit_duration;
+/* CMPE 283 Assignment 2 Changes */
+extern u32 all_exit_count;
+extern u64 processing_time_all_exits
+
+
 
 #ifdef MODULE
 static const struct x86_cpu_id vmx_cpu_id[] = {
@@ -6416,6 +6418,16 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	u32 vectoring_info = vmx->idt_vectoring_info;
 	u16 exit_handler_index;
 
+	/* CMPE283 Assignment 2 Changes */
+    u64 startTime;
+	u64 overallTime;
+	int exitHandler;
+
+	all_exit_count=all_exit_count+1;
+	if (exit_reason.basic <= 69) {
+		exitCount[exit_reason.basic]++;
+	}
+
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before
@@ -6573,7 +6585,15 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	if (!kvm_vmx_exit_handlers[exit_handler_index])
 		goto unexpected_vmexit;
 
-	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+	startTime = rdtsc();
+	exitHandler=kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+    overallTime = rdtsc() - startTime;
+
+	processing_time_all_exits = overallTime  + processing_time_all_exits;
+    exitDuration[(int)exit_handler_index] = (overallTime + exitDuration[(int)exit_handler_index]);
+
+
+	return exitHandler;
 
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n",
@@ -6591,13 +6611,7 @@ unexpected_vmexit:
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
 
-	//CMPE283-Assignment2 Changes
-	int ret;
-    u64 start_time=rdtsc();
-	atomic64_inc(&exit_counters);
-
 	int ret = __vmx_handle_exit(vcpu, exit_fastpath);
-	atomic64_add(rdtsc() - start_time, &exit_duration);
 
 	/*
 	 * Exit to user space when bus lock detected to inform that there is

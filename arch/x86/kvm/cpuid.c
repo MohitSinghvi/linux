@@ -36,11 +36,9 @@
 u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
 EXPORT_SYMBOL_GPL(kvm_cpu_caps);
 
-/*CMPE283-Assignment2 Changes*/
-atomic64_t exit_counter = ATOMIC64_INIT(0);
-EXPORT_SYMBOL(exit_counter);
-atomic64_t exit_duration = ATOMIC64_INIT(0);
-EXPORT_SYMBOL(exit_duration);
+/* CMPE 283 Assignment 2 Changes */
+u32 all_exit_count = 0;
+u64 processing_time_all_exits = 0;
 
 
 u32 xstate_required_size(u64 xstate_bv, bool compacted)
@@ -1575,24 +1573,18 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 
-	if(eax == 0x4fffffff){
+	if(eax == 0x4fffffff) //leaf node 0x4fffffff
+	{
+		eax = all_exit_count;
+	 	printk(KERN_INFO "###### Total no of exits:  %u", eax);
 
-		printk(KERN_INFO "### Updating Registers");
-		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
-		eax = atomic64_read(&exit_counter);
+	} else if(eax == 0x4ffffffe){ //leaf node 0x4ffffffe
+		ebx = (processing_time_all_exits >> 32);
+		ecx = (processing_time_all_exits & 0xFFFFFFFF);
+		printk(KERN_INFO "###### ebx: Total time spent in processing exits:(high) = %u ", ebx);
+		printk(KERN_INFO "###### ecx: Total time spent in processing exits:(low) = %u ", ecx);
 
-		// Total Number of exit counts
-		printk(KERN_INFO "### eax: Total no of exits = %u", eax);
-		
-		// High 32 bits of the total time spent in %ebx
-		ebx = (atomic64_read(&exit_duration) >> 32);
-		printk(KERN_INFO "### ebx: exit duration (high) = %u", ebx);
-		
-		// Low 32 bits of the total time spent in %ecx
-		ecx = (atomic64_read(&exit_duration) & 0xFFFFFFFF);
-		printk(KERN_INFO "### ebx: exit duration (low) = %u", ecx);
-
-	} else {
+	}  else {
 		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 	}
 
