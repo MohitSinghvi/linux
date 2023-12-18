@@ -1,18 +1,22 @@
 # CMPE-283 Assignment 1  
-# Discovering VMX Features : Learn how to discover VMX features present in your processor by writing a Linux kernel module that queries these features. 
+# Discovering VMX Features
 
-#Team
-Mohit Mahendra Singhvi
+Learn how to discover VMX features present in your processor by writing a Linux kernel module that queries these features. 
+
+# Team
+
+Mohit Mahendra Singhvi,
+
 Kushal Sai Vema
 
-#Questions
-	1.  Contribution : For each member in your team, provide 1 paragraph detailing what parts of the lab that member implemented / researched. (You may skip this question if you are doing the lab by yourself). 
+# Questions
+1.  Contribution : For each member in your team, provide 1 paragraph detailing what parts of the lab that member implemented / researched. (You may skip this question if you are doing the lab by yourself). 
 	
 Mohit Mahendra Singhvi: I performed gcp setup, forked the linux git repo and cloned it on the instance, researched Intel SDM for the entry, exit and primary procbased vmexit controls and added the struct and logic to print the info to the files cmpe-283-1.c 
 	
 Kushal Sai Vema: Helped with researching for the vm exit controls for secondary and ertiary procbased control and collaborated in running and executing the changes made to cmpe-283-1.c
 	
-  Steps: Describe in detail the steps you used to complete the assignment.
+2. Steps: Describe in detail the steps you used to complete the assignment.
 
 		a. Forked the github repository https://github.com/torvalds/linux into your github account
 		b. Created a gcp instance with support for nested virtualization.
