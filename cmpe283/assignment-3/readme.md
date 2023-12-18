@@ -3,19 +3,6 @@
 
 To modify the CPUID emulation code in KVM to report back additional information when special CPUID leaf nodes are requested.
 
-<b>For CPUID leaf node %eax=0x4FFFFFFF:</b>
-
-Return the total number of exits (all types) in %eax
-
-
-<b>For CPUID leaf node %eax=0x4FFFFFFE:</b>
-
-Return the high 32 bits of the total time spent processing all exits in %ebx
-
-Return the low 32 bits of the total time spent processing all exits in %ecx
-
-%ebx and %ecx return values are measured in processor cycles, across all VCPUs
-
 Team
 Mohit Mahendra Singhvi
 Kushal Sai Vema
